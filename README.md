@@ -5,7 +5,7 @@ A local mortgage and investment analysis app. Track how rate changes, extra paym
 ![Morty Logo](public/morty-logo.png)
 
 ## Bugs
-- 
+- **Interest** - Interest payments are not calculating correctly
 
 ## Features
 
