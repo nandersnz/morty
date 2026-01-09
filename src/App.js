@@ -230,15 +230,15 @@ function App() {
                               <td style={{ fontSize: '12px', color: '#64748b' }}>
                                 {transaction.minimumPayment !== undefined ? formatCurrency(transaction.minimumPayment) : '-'}
                               </td>
-                              <td>{formatCurrency(transaction.mortgageBalance)}</td>
-                              <td style={{ color: transaction.offsetBalance > 0 ? '#16a34a' : 'inherit' }}>
-                                {formatCurrency(transaction.offsetBalance)}
+                              <td>{formatCurrency(transaction.amortizedPrincipal)}</td>
+                              <td style={{ color: transaction.redrawOffsetPool > 0 ? '#16a34a' : 'inherit' }}>
+                                {formatCurrency(transaction.redrawOffsetPool)}
                               </td>
                               <td style={{ 
                                 fontWeight: '500',
-                                color: transaction.effectiveBalance === 0 ? '#16a34a' : 'inherit'
+                                color: transaction.netInterestBearingBalance === 0 ? '#16a34a' : 'inherit'
                               }}>
-                                {formatCurrency(transaction.effectiveBalance)}
+                                {formatCurrency(transaction.netInterestBearingBalance)}
                               </td>
                               <td>{transaction.rate}%</td>
                             </tr>

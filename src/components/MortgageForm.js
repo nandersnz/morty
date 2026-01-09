@@ -50,9 +50,9 @@ function MortgageForm({ mortgageData, setMortgageData, results, investments, tim
     
     if (currentTransaction) {
       return {
-        mortgageBalance: currentTransaction.mortgageBalance || 0,
-        offsetBalance: currentTransaction.offsetBalance || 0,
-        effectiveBalance: currentTransaction.effectiveBalance || 0
+        mortgageBalance: currentTransaction.amortizedPrincipal || 0,
+        offsetBalance: currentTransaction.redrawOffsetPool || 0,
+        effectiveBalance: currentTransaction.netInterestBearingBalance || 0
       };
     }
     
@@ -161,7 +161,7 @@ function MortgageForm({ mortgageData, setMortgageData, results, investments, tim
                 textAlign: 'center'
               }}>
                 <div style={{ fontSize: '18px', fontWeight: '600', color: '#ef4444', marginBottom: '2px' }}>
-                  {formatCurrency(Math.max(0, currentValues.effectiveBalance))}
+                  {formatCurrency(currentValues.effectiveBalance)}
                 </div>
                 <div style={{ fontSize: '12px', color: '#64748b', fontWeight: '500' }}>
                   Effective

@@ -42,7 +42,7 @@ function Results({ results, originalMortgage }) {
               type="monotone" 
               dataKey="balance" 
               stroke="#8884d8" 
-              name="Remaining Balance"
+              name="Amortized Principal"
               strokeWidth={2}
             />
             <Line 
@@ -57,7 +57,7 @@ function Results({ results, originalMortgage }) {
                 type="monotone" 
                 dataKey="effectiveBalance" 
                 stroke="#ff7300" 
-                name="Effective Balance (after offset)"
+                name="Net Interest-Bearing Balance"
                 strokeWidth={2}
               />
             )}
