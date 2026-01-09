@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import Results from './Results';
 
-function MortgageForm({ mortgageData, setMortgageData, results, investments, timelineEvents }) {
+function MortgageForm({ mortgageData, setMortgageData, results, investments, timelineEvents, showAnalysis, setShowAnalysis }) {
   const [showModal, setShowModal] = useState(false);
 
   const handleChange = (field, value) => {
@@ -80,13 +81,13 @@ function MortgageForm({ mortgageData, setMortgageData, results, investments, tim
 
   return (
     <>
-      <div 
-        className="card mortgage-summary mortgage-bar"
-        onMouseEnter={(e) => e.currentTarget.querySelector('.edit-icon').style.opacity = '1'}
-        onMouseLeave={(e) => e.currentTarget.querySelector('.edit-icon').style.opacity = '0'}
-        onClick={() => setShowModal(true)}
-        style={{ cursor: 'pointer', position: 'relative' }}
-      >
+      <div className="card mortgage-summary mortgage-bar" style={{ position: 'relative' }}>
+        <div 
+          onMouseEnter={(e) => e.currentTarget.querySelector('.edit-icon').style.opacity = '1'}
+          onMouseLeave={(e) => e.currentTarget.querySelector('.edit-icon').style.opacity = '0'}
+          onClick={() => setShowModal(true)}
+          style={{ cursor: 'pointer', position: 'relative' }}
+        >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
             {/* Mortgage Group */}
@@ -205,16 +206,66 @@ function MortgageForm({ mortgageData, setMortgageData, results, investments, tim
                 <div className="header-card-value">{formatDate(results.payoffDate)}</div>
                 <div className="header-card-label">Payoff Date</div>
               </div>
-              {results.interestSaved > 0 && (
-                <div className="header-card">
-                  <div className="header-card-value">{formatCurrency(results.interestSaved)}</div>
-                  <div className="header-card-label">Interest Saved</div>
-                </div>
-              )}
+              <div className="header-card">
+                <div className="header-card-value">{formatCurrency(results.interestSaved)}</div>
+                <div className="header-card-label">Interest Saved</div>
+              </div>
             </div>
           )}
         </div>
+        
+        {/* Analysis expand button at bottom right edge */}
+        {results && (
+          <div 
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent modal from opening
+              setShowAnalysis(!showAnalysis);
+            }}
+            style={{
+              position: 'absolute',
+              bottom: '-40px',
+              right: '16px',
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '12px',
+              padding: '6px 12px',
+              fontSize: '12px',
+              color: '#64748b',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              transition: 'all 0.2s ease',
+              zIndex: 10
+            }}
+            onMouseOver={(e) => {
+              e.target.style.backgroundColor = '#f1f5f9';
+              e.target.style.borderColor = '#cbd5e1';
+            }}
+            onMouseOut={(e) => {
+              e.target.style.backgroundColor = '#ffffff';
+              e.target.style.borderColor = '#e2e8f0';
+            }}
+          >
+            {showAnalysis ? '▲' : '▼'} Analysis
+          </div>
+        )}
+          
+        </div>
       </div>
+
+      {results && showAnalysis && (
+        <div style={{ 
+          margin: '16px 0', 
+          padding: '20px', 
+          border: '1px solid #e2e8f0', 
+          borderRadius: '8px', 
+          backgroundColor: '#f8fafc' 
+        }}>
+          <Results results={results} originalMortgage={mortgageData} />
+        </div>
+      )}
 
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
@@ -310,12 +361,57 @@ function MortgageForm({ mortgageData, setMortgageData, results, investments, tim
               </div>
 
               <div className="form-group">
-                <label>Offset Account Balance ($)</label>
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'flex-start', 
+                  gap: '12px',
+                  padding: '12px',
+                  backgroundColor: '#f8fafc',
+                  borderRadius: '6px',
+                  border: '1px solid #e2e8f0'
+                }}>
+                  <input
+                    type="checkbox"
+                    id="existingMortgage"
+                    checked={mortgageData.isExistingMortgage || false}
+                    onChange={(e) => handleChange('isExistingMortgage', e.target.checked)}
+                    style={{ 
+                      marginTop: '2px',
+                      width: '16px',
+                      height: '16px',
+                      cursor: 'pointer'
+                    }}
+                  />
+                  <div style={{ flex: 1 }}>
+                    <label 
+                      htmlFor="existingMortgage"
+                      style={{ 
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        display: 'block',
+                        marginBottom: '4px'
+                      }}
+                    >
+                      Existing Mortgage
+                    </label>
+                    <small style={{ 
+                      fontSize: '12px', 
+                      color: '#64748b', 
+                      lineHeight: '1.4'
+                    }}>
+                      Check this if you're analyzing an existing mortgage (not a new loan). Interest will be calculated from the previous interest date.
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Offset/Redraw Balance ($)</label>
                 <input
                   type="number"
                   value={mortgageData.offsetBalance || 0}
                   onChange={(e) => handleChange('offsetBalance', parseFloat(e.target.value) || 0)}
-                  placeholder="Amount in offset account"
+                  placeholder="Amount in offset/redraw account"
                 />
               </div>
             </div>

@@ -222,7 +222,7 @@ function TimelineManager({ timelineEvents, setTimelineEvents }) {
                     newEvent.type === 'deposit' ? 'Deposit amount' :
                     newEvent.type === 'redraw' ? 'Redraw amount' :
                     newEvent.type === 'adjustBalance' ? 'Current loan balance' :
-                    newEvent.type === 'adjustOffset' ? 'New offset balance' : ''
+                    newEvent.type === 'adjustOffset' ? 'New offset/redraw balance' : ''
                   }
                 />
               </div>

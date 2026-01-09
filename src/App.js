@@ -18,15 +18,16 @@ function App() {
     startDate: new Date().toISOString().split('T')[0],
     offsetBalance: 0,
     paymentDay: 1,
-    interestDay: 1
+    interestDay: 1,
+    isExistingMortgage: false
   });
 
   const [timelineEvents, setTimelineEvents] = useState([]);
   const [results, setResults] = useState(null);
-  const [showAnalysis, setShowAnalysis] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [activeTab, setActiveTab] = useState('mortgage');
+  const [activeTab, setActiveTab] = useState('ledger');
   const [investments, setInvestments] = useState([]);
+  const [showAnalysis, setShowAnalysis] = useState(false);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -149,15 +150,23 @@ function App() {
         results={results}
         investments={investments}
         timelineEvents={timelineEvents}
+        showAnalysis={showAnalysis}
+        setShowAnalysis={setShowAnalysis}
       />
 
       <div className="tab-container">
         <div className="tab-buttons">
           <button 
-            className={`tab-button ${activeTab === 'mortgage' ? 'active' : ''}`}
-            onClick={() => setActiveTab('mortgage')}
+            className={`tab-button ${activeTab === 'ledger' ? 'active' : ''}`}
+            onClick={() => setActiveTab('ledger')}
           >
-            Mortgage
+            Ledger
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'events' ? 'active' : ''}`}
+            onClick={() => setActiveTab('events')}
+          >
+            Events
           </button>
           <button 
             className={`tab-button ${activeTab === 'investments' ? 'active' : ''}`}
@@ -168,7 +177,86 @@ function App() {
         </div>
 
         <div className="tab-content">
-          {activeTab === 'mortgage' && (
+          {activeTab === 'ledger' && (
+            <div className="main-content">
+              <div className="card">
+                <h2>Transaction Ledger</h2>
+                
+                {results && results.transactions ? (
+                  <div>
+                    <div style={{ marginBottom: '16px', fontSize: '14px', color: '#64748b' }}>
+                      Total Transactions: {results.transactions.length}
+                    </div>
+                    
+                    <div className="table-container" style={{ maxHeight: '600px', overflowY: 'auto' }}>
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Transaction Type</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Min Payment</th>
+                            <th>Mortgage Balance</th>
+                            <th>Offset/Redraw Balance</th>
+                            <th>Effective Balance</th>
+                            <th>Rate</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {results.transactions.map((transaction, index) => (
+                            <tr key={index} style={{ 
+                              backgroundColor: transaction.type === 'Interest Charge' ? '#fef3c7' : 
+                                              transaction.type === 'Monthly Payment' ? '#f0f9ff' :
+                                              transaction.type === 'Payment to Offset' ? '#e0f2fe' :
+                                              transaction.type === 'Deposit' ? '#f0fdf4' :
+                                              transaction.type === 'Redraw' ? '#fef2f2' :
+                                              index % 2 === 0 ? '#f8fafc' : 'transparent'
+                            }}>
+                              <td>{formatDate(transaction.date)}</td>
+                              <td style={{ fontWeight: '500' }}>{transaction.type}</td>
+                              <td style={{ fontSize: '12px', color: '#64748b' }}>
+                                {transaction.description}
+                              </td>
+                              <td style={{ 
+                                color: transaction.amount > 0 ? '#dc2626' : 
+                                       transaction.amount < 0 ? '#16a34a' : 'inherit',
+                                fontWeight: transaction.amount !== 0 ? '500' : 'normal'
+                              }}>
+                                {transaction.amount !== 0 ? formatCurrency(Math.abs(transaction.amount)) : '-'}
+                                {transaction.amount > 0 && <span style={{ fontSize: '12px', marginLeft: '4px', color: '#dc2626' }}>+</span>}
+                                {transaction.amount < 0 && <span style={{ fontSize: '12px', marginLeft: '4px', color: '#16a34a' }}>-</span>}
+                              </td>
+                              <td style={{ fontSize: '12px', color: '#64748b' }}>
+                                {transaction.minimumPayment !== undefined ? formatCurrency(transaction.minimumPayment) : '-'}
+                              </td>
+                              <td>{formatCurrency(transaction.mortgageBalance)}</td>
+                              <td style={{ color: transaction.offsetBalance > 0 ? '#16a34a' : 'inherit' }}>
+                                {formatCurrency(transaction.offsetBalance)}
+                              </td>
+                              <td style={{ 
+                                fontWeight: '500',
+                                color: transaction.effectiveBalance === 0 ? '#16a34a' : 'inherit'
+                              }}>
+                                {formatCurrency(transaction.effectiveBalance)}
+                              </td>
+                              <td>{transaction.rate}%</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                    No transaction data available. Please check your mortgage settings.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'events' && (
             <div className="main-content">
               <TimelineManager 
                 timelineEvents={timelineEvents}
@@ -187,24 +275,6 @@ function App() {
           )}
         </div>
       </div>
-
-      {showAnalysis && results && (
-        <Results 
-          results={results}
-          originalMortgage={mortgageData}
-        />
-      )}
-
-      {results && (
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
-          <button 
-            className="btn"
-            onClick={() => setShowAnalysis(!showAnalysis)}
-          >
-            {showAnalysis ? 'Hide Analysis' : 'Show Analysis'}
-          </button>
-        </div>
-      )}
     </div>
   );
 }

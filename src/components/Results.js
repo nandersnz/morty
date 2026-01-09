@@ -19,7 +19,7 @@ function Results({ results, originalMortgage }) {
 
   return (
     <div className="card">
-      <h2>Analysis Results</h2>
+      <h2>Mortgage Analysis</h2>
       
       <div style={{ marginTop: '32px', marginBottom: '32px' }}>
         <h3 style={{ marginBottom: '16px', color: '#1e293b', fontWeight: '600' }}>Balance Over Time</h3>
@@ -31,7 +31,7 @@ function Results({ results, originalMortgage }) {
               tickFormatter={(date) => new Date(date).getFullYear()}
             />
             <YAxis 
-              tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+              tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
             />
             <Tooltip 
               formatter={(value, name) => [formatCurrency(value), name]}
@@ -63,77 +63,6 @@ function Results({ results, originalMortgage }) {
             )}
           </LineChart>
         </ResponsiveContainer>
-      </div>
-
-      <div>
-        <h3 style={{ marginBottom: '16px', color: '#1e293b', fontWeight: '600' }}>Transaction History</h3>
-        <div className="table-container" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Transaction</th>
-                <th>Amount</th>
-                <th>Mortgage Balance</th>
-                <th>Offset Balance</th>
-                <th>Effective Balance</th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.transactions && results.transactions.map((transaction, index) => (
-                <tr key={index} style={{ 
-                  backgroundColor: transaction.type === 'Interest Charge' ? '#fef3c7' : 
-                                  transaction.type === 'Monthly Payment' ? '#f0f9ff' :
-                                  transaction.type === 'deposit' ? '#f0fdf4' :
-                                  transaction.type === 'redraw' ? '#fef2f2' :
-                                  'transparent'
-                }}>
-                  <td>{formatDate(transaction.date)}</td>
-                  <td>
-                    <div style={{ fontWeight: '500' }}>
-                      {transaction.type === 'rateChange' ? 'Rate Change' :
-                       transaction.type === 'deposit' ? 'Deposit' :
-                       transaction.type === 'redraw' ? 'Redraw' :
-                       transaction.type === 'repaymentChange' ? 'Payment Change' :
-                       transaction.type === 'refinance' ? 'Refinance' :
-                       transaction.type === 'recast' ? 'Recast' :
-                       transaction.type === 'adjustBalance' ? 'Balance Adjustment' :
-                       transaction.type === 'adjustOffset' ? 'Offset Adjustment' :
-                       transaction.type}
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
-                      {transaction.description}
-                    </div>
-                  </td>
-                  <td style={{ 
-                    color: transaction.amount > 0 ? '#dc2626' : 
-                           transaction.amount < 0 ? '#16a34a' : 'inherit',
-                    fontWeight: transaction.amount !== 0 ? '500' : 'normal'
-                  }}>
-                    {transaction.amount !== 0 ? formatCurrency(Math.abs(transaction.amount)) : '-'}
-                    {transaction.amount > 0 && <span style={{ fontSize: '12px', marginLeft: '4px', color: '#dc2626' }}>+</span>}
-                    {transaction.amount < 0 && <span style={{ fontSize: '12px', marginLeft: '4px', color: '#16a34a' }}>-</span>}
-                  </td>
-                  <td>{formatCurrency(transaction.mortgageBalance)}</td>
-                  <td style={{ color: transaction.offsetBalance > 0 ? '#16a34a' : 'inherit' }}>
-                    {formatCurrency(transaction.offsetBalance)}
-                  </td>
-                  <td style={{ 
-                    fontWeight: '500',
-                    color: transaction.effectiveBalance === 0 ? '#16a34a' : 'inherit'
-                  }}>
-                    {formatCurrency(transaction.effectiveBalance)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {results.transactions && results.transactions.length > 20 && (
-          <div style={{ marginTop: '12px', fontSize: '14px', color: '#64748b', textAlign: 'center' }}>
-            Showing {results.transactions.length} transactions. Scroll to see all entries.
-          </div>
-        )}
       </div>
     </div>
   );
